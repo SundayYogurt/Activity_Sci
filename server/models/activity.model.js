@@ -1,73 +1,77 @@
-import {Datatype} from "sequelize"
-import sequelize from "../config/db.config"
+import { DataTypes } from "sequelize";
+import sequelize from "./db.js";
 
 const Activity = sequelize.define("activity", {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    // Sequelize ไม่มี trim → ใช้ validate แทน
+    validate: {
+      notEmpty: true,
+      notNull: true,
+      is: /^\s*\S.*$/, // กันค่าเป็น string ว่างหรือ space ล้วน
+    },
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  type: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  level: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  team_size: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 1, // 
+    },
+  },
+  date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  location: {
+    type: DataTypes.STRING, // 
+    allowNull: false,
+  },
+  reg_open: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  reg_close: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  contact_name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  contact_phone: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  contact_email: {
+    type: DataTypes.STRING,
+    validate: {
+      isEmail: true, 
+    },
+  },
+  status: {
+    type: DataTypes.ENUM(
+      "draft",
+      "open",
+      "closed",
+      "in_progress",
+      "completed"
+    ),
+    defaultValue: "draft",
+    allowNull: false,
+  },
+});
 
-    id:{
-        type: Datatype.INTEGER,     // กำหนดชนิดข้อมูลเป็น integer
-        primaryKey: true,            // กำหนดเป็น primary key
-        autoIncrement: true,         // เพิ่มค่าอัตโนมัติ
-    },
-    name:{
-        type: Datatype.STRING,
-        allowNull: false,
-    },
-    description:{
-        type: Datatype.STRING,
-        allowNull: false
-    },
-    type:{
-        type: Datatype.STRING,
-        allowNull: false
-    },
-    level:{
-        type: Datatype.STRING,
-        allowNull: false
-    },
-    team_size: {
-        type: Datatype.INTEGER,
-        allowNull: false
-    },
-    date:{
-        type: Datatype.DATE,
-        allowNull: false
-    },
-    location:{
-        type: Datatype.INTEGER,
-        allowNull: false
-    },
-    reg_open:{
-        type: Datatype.DATE,
-        allowNull: false
-    },
-    reg_close:{
-        type: Datatype.DATE,
-        allowNull: false
-    },
-    contact_name: {
-        type: Datatype.STRING,
-        allowNull: false
-    },
-    contact_phone: {
-        type: Datatype.STRING,
-        allowNull: false
-    },
-    contact_email: {
-        type: Datatype.STRING,
-        allowNull: false
-    },
-    status: {
-        type: Datatype.STRING,
-        allowNull: false
-    }
-
-})
-
-Restaurant.sync({force: false}).then(()=>{
-    console.log("Table created or already exists") // log เมื่อสร้าง table สำเร็จ
-}).catch((error)=>{
-    console.log("Error creating table", error);    // log เมื่อเกิด error
-})
-
-
-export default Activity
+export default Activity;
