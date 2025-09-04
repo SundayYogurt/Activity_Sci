@@ -1,0 +1,52 @@
+services: # กำหนดกลุ่มของ services (container) ที่จะถูกสร้างและจัดการโดย Docker Compose
+
+  server: # Service สำหรับ backend server (เช่น Node.js/Express)
+    build: # กำหนดวิธีการ build image ของ service นี้
+      context: ./server # โฟลเดอร์ที่ใช้เป็น context ในการ build (คือ ./server)
+      dockerfile: Dockerfile.server # ชื่อไฟล์ Dockerfile ที่ใช้ build image
+    ports:
+      - 3000:3000 # map port 3000 ของ host ไปยัง port 3000 ของ container (ใช้สำหรับเข้าถึง backend จากภายนอก)
+    volumes:
+      - "./server:/app" # mount โฟลเดอร์ ./server จากเครื่อง host ไปยัง /app ใน container (hot reload ได้)
+      - "/app/node_modules" # สร้าง volume แยกสำหรับ node_modules เพื่อไม่ให้ทับกับของ host
+    command: nodemon --legacy-watch index.js
+    restart: always
+    environment: # กำหนด environment variables สำหรับ container นี้
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/sci_day # URL สำหรับเชื่อมต่อกับฐานข้อมูล Postgres
+      - HOST=db # ชื่อ host ของ database (service db)
+      - USER=postgres # ชื่อผู้ใช้ของ database
+      - PASSWORD=postgres # รหัสผ่านของ database
+      - DB=sci_day # ชื่อ database
+      - DB_PORT=5432 # port ของ database
+      - SERVER_PORT=3000 # port ที่ server จะรัน
+    depends_on:
+      - db # ให้ service นี้เริ่มหลังจาก db (Postgres) พร้อมใช้งาน
+
+#   client: # Service สำหรับ frontend client (เช่น React/Vite)
+#     build:
+#       context: ./client # โฟลเดอร์ context สำหรับ build image
+#       dockerfile: Dockerfile.client # ชื่อไฟล์ Dockerfile ที่ใช้ build image
+#     ports:
+#       - 5173:5173 # map port 5173 ของ host ไปยัง port 5173 ของ container (ใช้สำหรับเข้าถึง frontend จากภายนอก)
+#     volumes:
+#       - "./client:/app" # mount โฟลเดอร์ ./client จากเครื่อง host ไปยัง /app ใน container (hot reload ได้)
+#       - "/app/node_modules" # สร้าง volume แยกสำหรับ node_modules เพื่อไม่ให้ทับกับของ host
+#     environment:
+#       - CHOKIDAR_USEPOLLING=true # ตั้งค่าให้ Chokidar (watcher ของ React/Vite) ใช้ polling (เหมาะกับ Docker)
+#     depends_on:
+#       - server # ให้ service นี้เริ่มหลังจาก server พร้อมใช้งาน
+
+  db: # Service สำหรับฐานข้อมูล Postgres
+    image: postgres:16 # ใช้ image postgres เวอร์ชัน 16 จาก Docker Hub
+    restart: always # ให้ container restart อัตโนมัติหากหยุดทำงาน
+    ports:
+      - "5433:5432" # map port 5432 ของ host ไปยัง port 5432 ของ container (สำหรับเชื่อมต่อฐานข้อมูลจากภายนอก)
+    environment:
+      - POSTGRES_USER=postgres # กำหนดชื่อผู้ใช้ของ Postgres
+      - POSTGRES_PASSWORD=postgres # กำหนดรหัสผ่านของ Postgres
+      - POSTGRES_DB=sci_day # กำหนดชื่อ database ที่จะสร้างตอนเริ่มต้น
+    volumes:
+      - pgdata:/var/lib/postgresql/data # mount volume ชื่อ pgdata ไปยัง path ที่เก็บข้อมูลของ Postgres (เพื่อให้ข้อมูลไม่หายเมื่อ container หยุด)
+
+volumes: # กำหนด named volume ที่ใช้ใน services ด้านบน
+  pgdata: # สร้าง volume ชื่อ pgdata สำหรับเก็บข้อมูลถาวรของ Postgres แชร์ ทุก service
