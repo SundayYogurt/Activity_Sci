@@ -1,127 +1,88 @@
-import Activity from "../models/activity.model.js";
-const activityController = {}; // สร้าง object สำหรับ controller
+import Activity from '../models/activity.model.js'
+import { Op } from 'sequelize' // เพิ่มการ import Op Op คือ Operators
+const activityController = {}
 
 activityController.create = async (req, res) => {
     try {
         const { name, description, type, level, team_size, date, location, reg_open, reg_close, contact_name, contact_phone, contact_email, status } = req.body
-        if (!name || !description || !type || !level || !team_size || !date || !location || !reg_open || !reg_close || !contact_name || !contact_phone || !contact_email || !status) {         // ตรวจสอบข้อมูลครบหรือไม่
-            res.status(400).send({ message: "Please provide all required fields!" });
-            return;
+
+        if (!name || !description || !type || !level || !team_size || !date || !location || !reg_open || !reg_close || !contact_name || !contact_phone || !contact_email || !status) {
+            return res.status(400).json({ message: 'please provide all required fields' })
         }
 
-        await Activity.findOne({ where: { name } }).then((activity) => { // ตรวจสอบชื่อซ้ำ
-            if (activity) {
-                res.status(400).send({ message: "Activity is already exists!" });
-            }
+        const activity = await Activity.findOne({ where: { name: name } })
+        if (activity) {
+            return res.status(400).send({ message: 'activity already existed!' }) // แก้ stauts เป็น status
+        }
 
-            const newActivity = {
-                name, description, type, level, team_size, date, location, reg_open, reg_close, contact_name, contact_phone, contact_email, status
-            }
+        const newActivity = { name, description, type, level, team_size, date, location, reg_open, reg_close, contact_name, contact_phone, contact_email, status }
 
-            Activity.create(newActivity).then((data) => { // สร้าง activity
-                res.send(data);
-            }).catch((error) => {
-                res.status(500).send({ message: error.message || "Something error while creating a activity" })
+        Activity.create(newActivity)
+            .then((data) => {
+                res.send(data)
             })
-        })
+            .catch((error) => {
+                res.status(500).send({ message: error.message || 'Something error while creating the activity' })
+            })
     } catch (error) {
-        console.log("error while creating controller")
-        res.status(500), error
+        console.log("error while creating controller " + error)
+        res.status(500).send({ message: error.message || 'Something error while fetching the activity' })
     }
 }
 
 activityController.getActivityById = async (req, res) => {
     try {
-        const { id } = req.params;
-        const activity = await Activity.findByPk(id);
+        const { id } = req.params
+        const activity = await Activity.findByPk(id)
         if (!activity) {
-            res.status(404).send({ message: error.message || "No found Restaurant" + id })
+            res.status(404).send({ message: `not found activity with id ${id}` }) // ใช้ backtick
         } else {
-            res.send(data)
+            res.send(activity)
         }
     } catch (error) {
-        res.status(500).send({
-            message: error.message || "something error while getting activity by id" + id
-        })
-    }
-}
-
-activityController.updateById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name, description, type, level, team_size, date, location, reg_open, reg_close, contact_name, contact_phone, contact_email, status } = req.body
-        if (!name || !description || !type || !level || !team_size || !date || !location || !reg_open || !reg_close || !contact_name || !contact_phone || !contact_email || !status) {         // ตรวจสอบข้อมูลครบหรือไม่
-            res.status(400).send({ message: "Please provide all required fields!" });
-            return;
-        }
-        await Activity.update(req.body, { where: { id } }).then((result) => {
-            if (result[0] === 1) {
-                res.send({ message: "Activity was updated successfully." })
-            } else {
-                res.send({ message: `Cannot update Activity with id=${id}. Maybe Activity was not found or req.body is empty!` })
-            }
-        }).catch((error) => {
-            res.status(500).send({ message: "Error updating Activity with id=" + id } || error)
-        })
-    } catch (error) {
-        res.status(500).send({
-            message: error.message || "something error while updating activity by id" + id
-        })
-    }
-}
-
-activityController.deleteById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Activity.destroy({ where: { id } }).then((result) => {
-            if (result === 1) {
-                res.send({ message: "Activity was deleted successfully!" })
-            } else {
-                res.send({ message: `Cannot delete Activity with id=${id}. Maybe Activity was not found!` })
-            }
-        }).catch((error) => {
-            res.status(500).send({ message: "Could not delete Activity with id=" + id })
-        })
-    } catch (error) {
-        res.status(500).send({
-            message: error.message || "something error while deleting activity by id" + id
-        })
+        console.log(error)
+        res.status(500).json({ message: "Something error while getting activity with id" })
     }
 }
 
 activityController.getAll = async (req, res) => {
     try {
-        const activities = await Activity.findAll();
-        res.send(activities);
+        const activities = await Activity.findAll()
+        res.status(200).json(activities)
     } catch (error) {
-        res.status(500).send({
-            message: error.message || "something error while getting all activities"
-        })
+        console.log(error)
+        res.status(500).json({ message: "Something error while getting all activity" })
     }
 }
 
 activityController.searchActivities = async (req, res) => {
     try {
-        const { name, type, level, status, dateFrom, dateTo } = req.query;
-        const whereClause = {};
-        if (name) whereClause.name = { [Op.like]: `%${name}%` };
-        if (type) whereClause.type = type;
-        if (level) whereClause.level = level;
-        if (status) whereClause.status = status;
-        if (dateFrom && dateTo) {
-            whereClause.date = { [Op.between]: [new Date(dateFrom), new Date(dateTo)] };
-        } else if (dateFrom) {
-            whereClause.date = { [Op.gte]: new Date(dateFrom) };
-        } else if (dateTo) {
-            whereClause.date = { [Op.lte]: new Date(dateTo) };
+        const { name, type, level, status } = req.query
+
+        const whereClause = {}
+
+        if (name) {
+            whereClause.name = { [Op.iLike]: `%${name}%` } // ใช้ backtick และ import Op
         }
-        const activities = await Activity.findAll({ where: whereClause });
-        res.send(activities);
+
+        if (type) {
+            whereClause.type = type
+        }
+
+        if (level) {
+            whereClause.level = level
+        }
+
+        if (status) {
+            whereClause.status = status
+        }
+
+        const activities = await Activity.findAll({ where: whereClause })
+        res.status(200).json(activities)
     } catch (error) {
-        res.status(500).send({
-            message: error.message || "something error while searching activities"
-        })
+        console.log("error searching activities:", error)
+        res.status(500).json({ message: 'something went wrong while searching activities' })
     }
 }
 
-export default activityController;
+export default activityController
