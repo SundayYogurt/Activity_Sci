@@ -3,7 +3,7 @@ import sequelize from "./db.js";
 import bcrypt from "bcryptjs";
 
 const User = sequelize.define(
-  "User",
+  "user",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -35,6 +35,14 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false,
+    },
+    school: {
+      type: DataTypes.STRING,
+      allowNull: true, //true เพราะ User ไม่มี attribute นี้
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true, //true เพราะ User ไม่มี attribute นี้
     },
   },
   {

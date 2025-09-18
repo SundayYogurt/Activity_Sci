@@ -1,12 +1,9 @@
-import sequelize from "./db";
 import User from "./user.model";
-import sequelize from "./db.js";
 
 const Admin = User.init(
   {},
   {
-    // กำหนด ขอบเขต scope ของ admin ให้ ขึ้นเป็น admin เท่านั้น ไม่รวม user type อื่น ตอนที่ query ข้อมูล เช่น findAll, findOne {(where: {...})}
-    sequelize,
+    // กำหนด ขอบเขต scope ของ admin ให้ ขึ้นเป็น admin เท่านั้น ไม่รวม user type อื่น ตอนที่ query ข้อมูล เช่น findAll,
     scopes: {
       defaultScope: {
         where: {
@@ -16,7 +13,7 @@ const Admin = User.init(
     },
   },
   {
-    hook: {
+    hooks: {
       beforeCreate: (admin) => {
         admin.type = "admin"; // กำหนดค่า type เป็น "admin" ก่อนสร้าง
       },

@@ -6,6 +6,9 @@ const router = express.Router(); // สร้าง router object
 // POST สมัครสมาชิก
 router.post("/signup", authController.signUp); // path /api/v1/register/signup
 
+// get http://localhost:3000/api/v1/auth/verify:token
+router.get("/verify/:token", authController.verifyEmail);
+
 // POST เข้าสู่ระบบ
 // router.post("/signin",authController.signIn); // path /api/v1/register/signin
 

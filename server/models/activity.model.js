@@ -28,7 +28,7 @@ const Activity = sequelize.define("activity", {
     type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
-      min: 1, // 
+      min: 1, //
     },
   },
   date: {
@@ -36,7 +36,7 @@ const Activity = sequelize.define("activity", {
     allowNull: false,
   },
   location: {
-    type: DataTypes.STRING, // 
+    type: DataTypes.STRING, //
     allowNull: false,
   },
   reg_open: {
@@ -58,17 +58,11 @@ const Activity = sequelize.define("activity", {
   contact_email: {
     type: DataTypes.STRING,
     validate: {
-      isEmail: true, 
+      isEmail: true,
     },
   },
   status: {
-    type: DataTypes.ENUM(
-      "draft",
-      "open",
-      "closed",
-      "in_progress",
-      "completed"
-    ),
+    type: DataTypes.ENUM("draft", "open", "closed", "in_progress", "completed"),
     defaultValue: "draft",
     allowNull: false,
   },

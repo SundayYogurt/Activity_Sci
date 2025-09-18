@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize"; // import DataTypes สำหรับกำหนดชนิดข้อมูล
 import User from "./user.model.js";
-import sequelize from "./db.js";
+
 const Teacher = User.init(
   {
     school: {
@@ -14,7 +14,7 @@ const Teacher = User.init(
   },
   {
     // กำหนด ขอบเขต scope ของ teacher ให้ ขึ้นเป็น teacher เท่านั้น ไม่รวม user type อื่น ตอนที่ query ข้อมูล เช่น findAll, findOne {(where: {...})}
-    sequelize,
+
     scopes: {
       defaultScope: {
         where: {

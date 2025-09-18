@@ -18,26 +18,26 @@ const initDatabase = async () => {
     await db.sequelize.authenticate();
     console.log("database connection established successfully");
     if (NODE_ENV === "development") {
-      // await db.sequelize.sync({ after: true });
+      await db.sequelize.sync({ alter: true });
       console.log("database Synced in development");
     }
   } catch (error) {
     console.log("Unable to connect to database", error);
   }
 };
-
-const initRole = async () => {
-  await role.create({ id: 1, name: "admin" });
-  await role.create({ id: 2, name: "manager" });
-  await role.create({ id: 3, name: "teacher" });
-  await role.create({ id: 4, name: "judge" });
-};
 initDatabase();
+// const initRole = async () => {
+//   await role.create({ id: 1, name: "admin" });
+//   await role.create({ id: 2, name: "manager" });
+//   await role.create({ id: 3, name: "teacher" });
+//   await role.create({ id: 4, name: "judge" });
+// };
+
 // sync schema กับฐานข้อมูล (force: true จะลบและสร้างใหม่ทุกครั้ง)
-db.sequelize.sync({ force: true }).then(() => {
-  initRole(); // สร้าง role เริ่มต้น
-  console.log("Drop and Sync"); // log เมื่อ sync สำเร็จ
-});
+// db.sequelize.sync({ force: true }).then(() => {
+//   // initRole(); // สร้าง role เริ่มต้น
+//   console.log("Drop and Sync"); // log เมื่อ sync สำเร็จ
+// });
 
 app.use(
   cors({

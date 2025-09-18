@@ -2,6 +2,8 @@ import db from "../models/index.js";
 import crypto from "crypto"; // สำหรับสร้าง token แบบสุ่ม
 import { sendVerificationEmail } from "../utils/email.js";
 
+import path from "path";
+
 const User = db.User;
 
 // register
@@ -38,7 +40,7 @@ const signUp = async (req, res) => {
     }
 
     //Create user object
-    const userData = { email, password, type, name }; // สร้าง object userData จากข้อมูลที่ได้รับมา
+    const userData = { email, password, type, name, isVerified: false }; // สร้าง object userData จากข้อมูลที่ได้รับมา
     if (type === "teacher") {
       userData.school = school;
       userData.phone = phone;
@@ -90,6 +92,53 @@ const signUp = async (req, res) => {
   }
 };
 
-const authController = { signUp };
+const verifyEmail = async (req, res) => {
+  console.log("verifyEmail");
+  const { token } = req.params;
+
+  if (!token) {
+    res.status(400).send({ message: "Token is missing!" });
+  }
+
+  try {
+    const VerificationToken = await db.VerificationToken.findOne({
+      where: { token },
+    });
+    if (!VerificationToken) {
+      return res.status(404).send({ message: "invalid valification token" });
+    }
+    //Check if token is expired
+    if (new Date() > VerificationToken.expiredAt) {
+      await VerificationToken.destroy();
+      return res
+        .status(400)
+        .send({ message: "Verification token has expired!" });
+    }
+    //protect theift
+
+    const user = await User.findByPk(VerificationToken.userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    await user.update({ isVerified: true });
+    await VerificationToken.destroy();
+
+    //return web view
+    const htmlPath = path.join(
+      // join คือเชื่อม ต่อๆกัน
+      process.cwd(), // cwd corrent working directory
+      "views",
+      "verification-success.html"
+    );
+    console.log(htmlPath);
+    res.sendFile(htmlPath);
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || "Some error occurred while creating the user.",
+    });
+  }
+};
+const authController = { signUp, verifyEmail };
 
 export default authController;
