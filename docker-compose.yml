@@ -22,25 +22,25 @@ services: # กำหนดกลุ่มของ services (container) ที�
     depends_on:
       - db # ให้ service นี้เริ่มหลังจาก db (Postgres) พร้อมใช้งาน
 
-#   client: # Service สำหรับ frontend client (เช่น React/Vite)
-#     build:
-#       context: ./client # โฟลเดอร์ context สำหรับ build image
-#       dockerfile: Dockerfile.client # ชื่อไฟล์ Dockerfile ที่ใช้ build image
-#     ports:
-#       - 5173:5173 # map port 5173 ของ host ไปยัง port 5173 ของ container (ใช้สำหรับเข้าถึง frontend จากภายนอก)
-#     volumes:
-#       - "./client:/app" # mount โฟลเดอร์ ./client จากเครื่อง host ไปยัง /app ใน container (hot reload ได้)
-#       - "/app/node_modules" # สร้าง volume แยกสำหรับ node_modules เพื่อไม่ให้ทับกับของ host
-#     environment:
-#       - CHOKIDAR_USEPOLLING=true # ตั้งค่าให้ Chokidar (watcher ของ React/Vite) ใช้ polling (เหมาะกับ Docker)
-#     depends_on:
-#       - server # ให้ service นี้เริ่มหลังจาก server พร้อมใช้งาน
+  client: # Service สำหรับ frontend client (เช่น React/Vite)
+    build:
+      context: ./client # โฟลเดอร์ context สำหรับ build image
+      dockerfile: Dockerfile.client # ชื่อไฟล์ Dockerfile ที่ใช้ build image
+    ports:
+      - 5173:5173 # map port 5173 ของ host ไปยัง port 5173 ของ container (ใช้สำหรับเข้าถึง frontend จากภายนอก)
+    volumes:
+      - "./client:/app" # mount โฟลเดอร์ ./client จากเครื่อง host ไปยัง /app ใน container (hot reload ได้)
+      - "/app/node_modules" # สร้าง volume แยกสำหรับ node_modules เพื่อไม่ให้ทับกับของ host
+    environment:
+      - CHOKIDAR_USEPOLLING=true # ตั้งค่าให้ Chokidar (watcher ของ React/Vite) ใช้ polling (เหมาะกับ Docker)
+    depends_on:
+      - server # ให้ service นี้เริ่มหลังจาก server พร้อมใช้งาน
 
   db: # Service สำหรับฐานข้อมูล Postgres
     image: postgres:16 # ใช้ image postgres เวอร์ชัน 16 จาก Docker Hub
     restart: always # ให้ container restart อัตโนมัติหากหยุดทำงาน
     ports:
-      - "5433:5432" # map port 5432 ของ host ไปยัง port 5432 ของ container (สำหรับเชื่อมต่อฐานข้อมูลจากภายนอก)
+      - "5434:5432" # map port 5433 ของ host ไปยัง port 5432 ของ container (สำหรับเชื่อมต่อฐานข้อมูลจากภายนอก)
     environment:
       - POSTGRES_USER=postgres # กำหนดชื่อผู้ใช้ของ Postgres
       - POSTGRES_PASSWORD=postgres # กำหนดรหัสผ่านของ Postgres

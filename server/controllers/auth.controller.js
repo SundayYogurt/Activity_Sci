@@ -1,8 +1,10 @@
 import db from "../models/index.js";
 import crypto from "crypto"; // สำหรับสร้าง token แบบสุ่ม
 import { sendVerificationEmail } from "../utils/email.js";
-
+import authConfig from "../config/auth.config.js"
 import path from "path";
+import jwt from 'jsonwebtoken'
+
 
 const User = db.User;
 
@@ -62,7 +64,7 @@ const signUp = async (req, res) => {
         console.log("verification token created ", verification);
 
         //send verification email
-        //TODO Send verifycayion email
+        //TODO Send verification email
         await sendVerificationEmail(user.email, token, user.name);
         console.log("Verfication email sent successfully");
       } catch (error) {
@@ -92,6 +94,55 @@ const signUp = async (req, res) => {
   }
 };
 
+const signIn = async (req, res) => {
+  try {
+      const {email, password} = req.body
+
+  if(!email || !password){
+    return res.status(400).send({message: "Email and Password are required!"})
+  }
+
+  const user = await User.findOne({where: {email}}) 
+
+  if(!user){
+    return res.status(404).send({message: "User not found"})
+  }
+
+  const passwordIsValid = await user.comparePassword(password)
+
+  if(!passwordIsValid) {
+    return res.status(401).send({message: "Invalid password"})
+  }
+
+  if(user.type === "teacher" && !user.isVerified){
+    return res.status(403).send({message: "Please verify your email to activate your account!"})
+  }
+
+const token = jwt.sign({id: user.id}, authConfig.secret, { 
+  expiresIn: 24 * 60 *60 * 1000
+}) 
+
+return res.status(200).send({message: "Login successfully!", 
+  user:{
+  id:user.id,
+  name: user.name,
+  email: user.email,
+  type: user.type,
+  ...(user.type === 'teacher' && {
+    isVerified: user.isVerified,
+    phone: user.phone,
+    school: user.school
+  })
+    },
+    accessToken: token,
+  })
+  } catch (error) {
+    return res.status(500).send({
+      message: error.message || "Some error occurred while login.",
+    });
+  }
+
+}
 const verifyEmail = async (req, res) => {
   console.log("verifyEmail");
   const { token } = req.params;
@@ -139,6 +190,6 @@ const verifyEmail = async (req, res) => {
     });
   }
 };
-const authController = { signUp, verifyEmail };
+const authController = { signUp, verifyEmail , signIn};
 
 export default authController;

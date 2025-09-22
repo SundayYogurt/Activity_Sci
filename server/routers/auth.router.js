@@ -10,6 +10,6 @@ router.post("/signup", authController.signUp); // path /api/v1/register/signup
 router.get("/verify/:token", authController.verifyEmail);
 
 // POST เข้าสู่ระบบ
-// router.post("/signin",authController.signIn); // path /api/v1/register/signin
+router.post("/signin",authController.signIn); // path /api/v1/register/signin
 
 export default router; // ส่งออก router
