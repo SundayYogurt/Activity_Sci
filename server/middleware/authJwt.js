@@ -16,80 +16,79 @@ const verifyToken = (req, res, next) => {
     }
 
     console.log("✅ Token decoded:", decoded); // debug
-    req.username = decoded.username; // เก็บ username จาก token
+    console.log("req.userId:", req.userId);
+    req.userId = decoded.id; // เก็บ username จาก token
+    
     next();
   });
 };
 
 // ตรวจสอบว่า user เป็น admin
 const isAdmin = async (req, res, next) => {
+  
   try {
-    // ใช้ findOne เผื่อ username ไม่ใช่ PK
-    const user = await User.findOne({ where: { username: req.username } });
-
-    if (!user) {
-      console.log("❌ User not found for username:", req.username);
-      return res.status(404).json({ message: "User not found!" });
-    }
-
-    const roles = await user.getRoles();
-    if (roles.some((role) => role.name === "admin")) {
-      return next();
-    }
-
-    return res.status(401).json({
-      message: "Unauthorized access, require admin role!",
-    });
-  } catch (err) {
-    console.error("Auth error:", err);
-    return res.status(500).json({ message: "Server error", error: err.message });
+    User.findByPk(req.userId).then((user) => {
+      console.log(user)
+      if(!user){
+        return res.status(404).json({ message: "User not found!" });
+      }
+      if(user.type === "admin"){
+        return next();
+      }
+      return res.send(401).send({message: "Unauthorize access. require admin role!"})
+    })
+  } catch (error) {
+    res.status(500).send({ message : error.message})
+  }
+};
+const isTeacherOrJudge = async (req, res, next) => {
+  try {
+   User.findByPk(req.userId).then((user) => {
+      if(!user){
+        return res.status(404).json({ message: "User not found!" });
+      }
+      if(user.type === "teacher" || user.type === "judge") {
+        return next();
+      }
+      return res.send(401).send({message: "Unauthorize access. require teacher or judge role!"})
+    })
+  } catch (error) {
+    res.status(500).send({ message : error.message})
   }
 };
 
-// ตรวจสอบว่า user เป็น admin หรือ moderator
-const isAdminOrManager = async (req, res, next) => {
+const isJudge = async (req, res, next) => {
   try {
-    const user = await User.findOne({ where: { username: req.username } });
-
-    if (!user) {
-      console.log("❌ User not found for username:", req.username);
-      return res.status(404).json({ message: "User not found!" });
-    }
-
-    const roles = await user.getRoles();
-    if (roles.some((role) => role.name === "admin" || role.name === "manager")) {
-      return next();
-    }
-
-    return res.status(401).json({
-      message: "Unauthorized access, require admin or manager role!",
-    });
-  } catch (err) {
-    console.error("Auth error:", err);
-    return res.status(500).json({ message: "Server error", error: err.message });
+     User.findByPk(req.userId).then((user) => {
+      if(!user){
+        return res.status(404).json({ message: "User not found!" });
+      }
+      if(user.type === "judge"){
+        return next();
+      }
+      return res.send(401).send({message: "Unauthorize access. require judge role!"})
+    })
+  } catch (error) {
+    res.status(500).send({ message : error.message})
   }
 };
 
-const isManager = async (req, res, next) => {
+const isTeacher = async (req, res, next) => {
   try {
-    const user = await User.findOne({ where: { username: req.username } }); // ใช้ findOne เผื่อ username ไม่ใช่ PK
-
-    if (!user) {
-      console.log("❌ User not found for username:", req.username);
-      return res.status(404).json({ message: "User not found!" });
-    }
-    const roles = await user.getRoles();
-    if (roles.some((role) => role.name === "manager")) {
-      return next();
-    } 
-    return res.status(401).json({
-      message: "Unauthorized access, require manager role!",
-    });
-  } catch (err) {
-    console.error("Auth error:", err);
-    return res.status(500).json({ message: "Server error", error: err.message });
+     User.findByPk(req.userId).then((user) => {
+      console.log(user)
+      if(!user){
+        return res.status(404).json({ message: "User not found!" });
+      }
+      if(user.type === "teacher"){
+        return next();
+      }
+      return res.send(401).send({message: "Unauthorize access. require teacher role!"})
+    })
+  } catch (error) {
+    res.status(500).send({ message : error.message})
   }
 };
 
-const authJwt = { verifyToken, isAdmin, isAdminOrManager, isManager };
+const authJwt = { verifyToken, isAdmin, isTeacherOrJudge, isJudge, isTeacher };
 export default authJwt;

@@ -85,4 +85,59 @@ activityController.searchActivities = async (req, res) => {
     }
 }
 
+activityController.deleteById = async (req, res) => {
+    try{
+        const { id } = req.params
+        if (!id) {
+            return res.status(400).send({ message: 'id are required!'})
+        }
+
+        const deleted = await Activity.destroy({where: { id }})
+        if(!deleted) {
+            return res.status(404).send({ message: "Activity not found!" });
+        }
+
+        res.send({ message: "Activity deleted successfully!" });
+    }catch(error){
+        console.log("error while deleting controller " + error)
+        res.status(500).send({ message: error.message || 'Something error while deleting the activity'})
+    }
+}
+
+activityController.updateById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { 
+            name, description, type, level, team_size, date, location, 
+            reg_open, reg_close, contact_name, contact_phone, contact_email, status 
+        } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ message: 'id is required!' });
+        }
+
+        // ตรวจสอบว่ามี activity อยู่หรือไม่
+        const activity = await Activity.findByPk(id);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found!' });
+        }
+
+        // เตรียม object สำหรับ update (จะอัปเดตเฉพาะ field ที่ส่งมา)
+        const updatedActivity = {
+            name, description, type, level, team_size, date, location,
+            reg_open, reg_close, contact_name, contact_phone, contact_email, status
+        };
+
+        await Activity.update(updatedActivity, { where: { id } });
+
+        // ดึงข้อมูลใหม่หลังอัปเดตกลับมา
+        const result = await Activity.findByPk(id);
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.log("error while updating controller " + error);
+        res.status(500).send({ message: error.message || 'Something went wrong while updating the activity' });
+    }
+};
+
 export default activityController

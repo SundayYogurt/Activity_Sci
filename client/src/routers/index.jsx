@@ -6,6 +6,8 @@ import { Home } from "../pages/home";
 import NotFound from "../pages/NotFound";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import AddActivities from "../pages/AddActivities";
+import Activities from "../pages/Activities";
 const router = createBrowserRouter([
     {
         path:"/",
@@ -15,15 +17,22 @@ const router = createBrowserRouter([
             path:"/",
             element:<Home/>
         },{
-            path:"/Login",
+            path:"/login",
             element:<Login/>
         },{
-            path:"/Register",
+            path:"/register",
             element:<Register/>
         }
         ,{
             path:"*",
             element:<NotFound/>
+        },{
+            path:"/add-activities",
+            element:<AddActivities/>
+        },
+        {
+            path:"/activities",
+            element:<Activities />
         }
     ]
     }

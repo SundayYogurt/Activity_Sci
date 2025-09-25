@@ -1,5 +1,12 @@
 const getUser = () => {
-    return JSON.parse(localStorage.getItem("user"))
+    const user = localStorage.getItem("user");
+  if (!user) return null; // หรือ return ค่า default อื่นๆ
+  try {
+    return JSON.parse(user);
+  } catch (error) {
+    console.error("Error parsing user data:", error);
+    return null;
+  }
 }
 
 const setUser = (user) => {

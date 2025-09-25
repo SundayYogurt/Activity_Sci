@@ -1,13 +1,16 @@
 import React from "react";
 import { useAuthContext } from "../context/AuthContext";
 import UserProfile from "./UserProfile";
-// Navbar component สำหรับแสดงเมนูนำทาง
+import { Link } from "react-router";
+
 const Navbar = () => {
   const { user } = useAuthContext();
+
   const menuItems = [
-    { name: "activities", url: "/add" },
+    { name: "New Activities", url: "/add-activities" },
     { name: "news", url: "/cart" },
-    { name: "Home", url: "/" }
+    { name: "Home", url: "/" },
+    { name: "Activities", url: "/activities" },
   ];
 
   return (
@@ -34,45 +37,25 @@ const Navbar = () => {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
-            {user?.type === "admin" && menuItems.map((item, i) => (
+            {menuItems.map((item, i) => (
               <li key={i}>
-                <a href={item.url}>{item.name}</a>
+                <Link to={item.url}>{item.name}</Link>
               </li>
             ))}
-            {user?.type === "teacher" && (
-              <li>
-                <a href={menuItems[1].url}>{menuItems[1].name}</a>
-              </li>
-            )}
-            {user?.type === "judge" && (
-              <li>
-                <a href={menuItems[2].url}>{menuItems[2].name}</a>
-              </li>
-            )}
           </ul>
         </div>
-        <a href="/" className="btn btn-ghost text-xl">
+        <Link to="/" className="btn btn-ghost text-xl">
           Grab
-        </a>
+        </Link>
       </div>
 
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          {user?.type === "admin" && menuItems.map((item, idx) => (
+          {menuItems.map((item, idx) => (
             <li key={idx}>
-              <a href={item.url}>{item.name}</a>
+              <Link to={item.url}>{item.name}</Link>
             </li>
           ))}
-          {user?.type === "teacher" && (
-            <li>
-              <a href={menuItems[1].url}>{menuItems[1].name}</a>
-            </li>
-          )}
-          {user?.type === "judge" && (
-            <li>
-              <a href={menuItems[2].url}>{menuItems[2].name}</a>
-            </li>
-          )}
         </ul>
       </div>
 
@@ -81,18 +64,17 @@ const Navbar = () => {
           <UserProfile />
         ) : (
           <div className="flex gap-5">
-            <a href="/register">
+            <Link to="/register">
               <button className="btn btn-soft btn-primary">Register</button>
-            </a>
-            <a href="/login">
+            </Link>
+            <Link to="/login">
               <button className="btn btn-soft btn-accent">Login</button>
-            </a>
+            </Link>
           </div>
         )}
       </div>
     </div>
   );
 };
-
 
 export default Navbar;

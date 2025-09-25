@@ -59,7 +59,7 @@ const signUp = async (req, res) => {
         const verification = await db.VerificationToken.create({
           token,
           userId: user.id,
-          expiredAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // หมดอายุใน 24 ชั่วโมง
+          expiredAt: new Date(Date.now() + 24 * 60 * 60 ), // หมดอายุใน 24 ชั่วโมง  = 24h
         });
         console.log("verification token created ", verification);
 
