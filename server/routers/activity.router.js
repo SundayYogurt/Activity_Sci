@@ -10,6 +10,6 @@ router.get("/search", activityController.searchActivities);
 router.get("/:id", activityController.getActivityById);
 router.get("/", activityController.getAll);
 router.delete("/:id",authJwt.verifyToken,authJwt.isAdmin, activityController.deleteById);
-router.put("/:id", authJwt.verifyToken, authJwt.isAdmin, activityController.updateById);
+router.put("/:id", authJwt.verifyToken,authJwt.isAdmin, activityController.updateById);
 
 export default router

@@ -8,6 +8,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import AddActivities from "../pages/AddActivities";
 import Activities from "../pages/Activities";
+import EditActivity from "../pages/EditActivity";
 const router = createBrowserRouter([
     {
         path:"/",
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
         {
             path:"/activities",
             element:<Activities />
+        },
+        {
+            path:"/edit-activity/:id",
+            element:<EditActivity />
         }
     ]
     }

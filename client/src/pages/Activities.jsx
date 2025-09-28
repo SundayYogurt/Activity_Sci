@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import ActivityCard from '../components/ActivityCard'; // อย่าลืม import ถ้ายังไม่ได้
 
 const Activities = () => {
+
   const [activities, setActivities] = useState([]);
 
   useEffect(() => {

@@ -83,13 +83,13 @@ const AddActivities = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12">
-      <div className="w-full max-w-lg space-y-8 rounded-xl bg-white p-8 shadow-md">
+    <div className="flex min-h-screen items-center justify-center px-6 py-12">
+      <div className="w-screen max-w-lg space-y-8 rounded-2xl bg-gray-200 p-8 shadow-md">
         <h2 className="text-center text-3xl font-bold text-gray-800 mb-6">
           เพิ่มกิจกรรมใหม่
         </h2>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4 text-gray-900 rounded-2xl" onSubmit={handleSubmit}>
           {/* Name */}
           <div>
             <label htmlFor="name" className="block font-medium text-gray-700">
@@ -348,7 +348,7 @@ const AddActivities = () => {
 
           <button
             type="submit"
-            className="w-full rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+            className="w-full rounded bg-indigo-600 px-4 py-2 text-grey-700 hover:bg-indigo-700"
           >
             เพิ่มกิจกรรม
           </button>

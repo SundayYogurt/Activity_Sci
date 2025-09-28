@@ -10,6 +10,9 @@ const transpotter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASSWORD,
   },
+  tls: {
+    rejectUnauthorized: false, // ข้ามการตรวจสอบใบรับรอง
+  },
 });
 
 //verify SMTP Connection Configutation

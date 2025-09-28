@@ -2,8 +2,10 @@
 import React from "react";
 import ActivityService from "../services/activities.service";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
 
 const ActivityCard = ({ activities }) => {
+
   const handleDelete = async (id) => {
 
     try {
@@ -15,6 +17,8 @@ const ActivityCard = ({ activities }) => {
           title: `deleted ${activities.name}`,
           text: "this Activity have been deleted",
           confirmButtonText:"ok",
+        }).then(() => {
+          window.location.reload();
         })
       }
     } catch (error) {
@@ -37,7 +41,9 @@ const ActivityCard = ({ activities }) => {
         <p>📍 {activities.location}</p>
         <p>📅 {new Date(activities.date).toLocaleDateString()}</p>
         <div className="card-actions justify-end">
-          <button className="btn btn-warning">edit</button>
+           <a href={`/edit-activity/${activities.id}`}>
+              <button className="btn btn-warning">Edit</button>
+            </a>
           <button className="btn btn-error" onClick={() => handleDelete(activities.id)}>delete</button>
         </div>
       </div>

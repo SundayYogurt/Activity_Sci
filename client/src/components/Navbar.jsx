@@ -45,7 +45,7 @@ const Navbar = () => {
           </ul>
         </div>
         <Link to="/" className="btn btn-ghost text-xl">
-          Grab
+          ActivitiesApp
         </Link>
       </div>
 
