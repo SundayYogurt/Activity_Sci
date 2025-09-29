@@ -8,7 +8,6 @@ const Navbar = () => {
 
   const menuItems = [
     { name: "New Activities", url: "/add-activities" },
-    { name: "news", url: "/cart" },
     { name: "Home", url: "/" },
     { name: "Activities", url: "/activities" },
   ];

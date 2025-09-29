@@ -6,7 +6,7 @@ return await api.post(API_URL + "/", data);
 }
 
 const updateActivity = async(id, data) => {
-    return await api.put`${API_URL}/${id}`, data
+    return await api.put(`${API_URL}/${id}`, data)
 }
 
 const getAllActivities = async() => {

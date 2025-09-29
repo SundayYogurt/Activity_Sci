@@ -7,8 +7,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(getUser);
 //logout ไปแล้ว login มาใหม่ state เปลี่ยน ที่ user
-    const login = (user) => setUser(user)
-
+    const login = (user) => setUser(user);
     const logout = () => {
         AuthService.logout();
         setUser(null);
